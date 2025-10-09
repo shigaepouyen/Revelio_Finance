@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance App V1</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; background-color: #f4f4f9; }
+        h1 { color: #333; }
+        #results { margin-top: 2em; }
+        table { width: 100%; border-collapse: collapse; background-color: white; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+       .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 20px; height: 20px; animation: spin 2s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <h1>Mon Tableau de Bord Financier</h1>
+    <p>Importez votre fichier de transactions au format OFX pour commencer.</p>
+
+    <input type="file" id="ofxFile" accept=".ofx,.qfx">
+    <button onclick="uploadFile()">Analyser le fichier</button>
+    <div class="loader" id="loader"></div>
+
+    <div id="results">
+        <h2 id="results-title" style="display:none;">Transactions</h2>
+        <table id="transactionsTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Montant (€)</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('ofxFile');
+            const file = fileInput.files;
+            const loader = document.getElementById('loader');
+            const resultsTitle = document.getElementById('results-title');
+            const table = document.getElementById('transactionsTable');
+            const tbody = table.querySelector('tbody');
+
+            if (!file) {
+                alert("Veuillez sélectionner un fichier.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            loader.style.display = 'block';
+            tbody.innerHTML = ''; // Vider le tableau précédent
+            resultsTitle.style.display = 'none';
+            table.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_URL}/upload-ofx/`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail |
+
+| `Erreur HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.transactions && data.transactions.length > 0) {
+                    resultsTitle.style.display = 'block';
+                    table.style.display = 'table';
+                    data.transactions.forEach(tx => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = tx.date;
+                        row.insertCell(1).textContent = tx.description;
+                        const amountCell = row.insertCell(2);
+                        amountCell.textContent = tx.amount.toFixed(2);
+                        amountCell.style.color = tx.amount < 0? 'red' : 'green';
+                        row.insertCell(3).textContent = tx.type;
+                    });
+                } else {
+                    alert("Aucune transaction trouvée dans le fichier.");
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert(`Une erreur est survenue : ${error.message}`);
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>

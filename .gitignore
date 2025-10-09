@@ -1,0 +1,40 @@
+# --- Environnement Virtuel Python ---
+# Ne jamais versionner les dépendances de l'environnement local.
+venv/
+.venv/
+
+# --- Fichiers de Cache et Bytecode Python ---
+# Ces fichiers sont générés automatiquement par Python.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Fichiers de Données Sensibles - TRÈS IMPORTANT ---
+# NE JAMAIS ENVOYER VOS FICHIERS DE TRANSACTIONS BANCAIRES SUR GIT!
+*.ofx
+*.qfx
+*.csv
+
+# --- Fichiers de Configuration des Éditeurs de Code ---
+# Ignore les configurations spécifiques à votre machine.
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# --- Fichiers de Log ---
+# Ignore les fichiers de journalisation.
+*.log
+*.log.*
+
+# --- Fichiers Système d'Exploitation ---
+# Ignore les fichiers créés par macOS et Windows.
+.DS_Store
+Thumbs.db
+
+# --- Artefacts de Build ---
+# Ignore les dossiers générés lors de la création d'un paquet Python.
+build/
+dist/
+*.egg-info/
