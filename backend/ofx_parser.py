@@ -1,7 +1,7 @@
 # backend/ofx_parser.py
 
 import io
-from ofxtools.parser import OFXTree
+from ofxtools.Parser import OFXTree
 
 def parse_ofx(file_content: bytes):
     """
@@ -14,10 +14,19 @@ def parse_ofx(file_content: bytes):
         
         # Convertir les données OFX en objets Python plus simples
         response = tree.convert()
-        
-        # Accéder à la liste des transactions
-        # La structure peut varier légèrement, mais c'est le chemin le plus courant
-        statement = response.accounts[0].statement
+
+        # Accéder à un compte avec un relevé et des transactions
+        accounts = getattr(response, 'accounts', [])
+        statement = None
+        for account in accounts:
+            stmt = getattr(account, 'statement', None)
+            if stmt and getattr(stmt, 'transactions', None):
+                statement = stmt
+                break
+
+        if not statement:
+            return []
+
         transactions = statement.transactions
         
         # Préparer la liste des résultats
