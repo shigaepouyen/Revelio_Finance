@@ -118,10 +118,11 @@ def test_upload_invalid_file_type():
     assert response.status_code == 400
     assert "Invalid file type" in response.json()["detail"]
 
-def test_root_endpoint():
+def test_get_index_html():
     """
-    Tests the root endpoint to ensure the API is running.
+    Tests that the root endpoint successfully serves the index.html file.
     """
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Bienvenue sur l'API de Revelio Finance"}
+    assert response.headers['content-type'] == 'text/html; charset=utf-8'
+    assert "<h1>Revelio Finance ✨</h1>".encode('utf-8') in response.content

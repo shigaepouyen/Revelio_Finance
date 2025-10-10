@@ -1,6 +1,7 @@
 # backend/main.py
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from .ofx_parser import parse_ofx
 from .routers import ai
@@ -27,8 +28,9 @@ app.add_middleware(
 )
 
 @app.get("/")
-def read_root():
-    return {"message": "Bienvenue sur l'API de Revelio Finance"}
+async def get_index():
+    """Serves the frontend index.html file."""
+    return FileResponse('frontend/index.html')
 
 @app.post("/upload-ofx/")
 async def upload_ofx_file(file: UploadFile = File(...)):
