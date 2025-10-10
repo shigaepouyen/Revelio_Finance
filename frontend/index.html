@@ -3,218 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revelio Finance - Analyse de Transactions</title>
+    <title>Revelio Finance - Révélez vos finances</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 2rem;
-            background-color: #f4f7f9;
-            color: #333;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
         }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        .upload-section {
-            text-align: center;
-            margin-bottom: 2rem;
-            border: 2px dashed #ccc;
-            padding: 2rem;
-            border-radius: 8px;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        .file-label {
-            cursor: pointer;
-            background-color: #3498db;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-        .file-label:hover {
-            background-color: #2980b9;
-        }
-        #file-name {
-            margin-top: 1rem;
-            font-style: italic;
-            color: #555;
-        }
-        button {
-            display: block;
-            margin: 1rem auto 0;
-            padding: 12px 25px;
-            border: none;
-            background-color: #2ecc71;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-        }
-        button:hover:not(:disabled) {
-            background-color: #27ae60;
-        }
-        .loader {
-            display: none;
-            margin: 1rem auto;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .results-section {
-            margin-top: 2rem;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-        .error {
-            color: #e74c3c;
-            text-align: center;
-            font-weight: bold;
+        .gradient-text {
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Revelio Finance ✨</h1>
-        <div class="upload-section">
-            <label for="ofxFile" class="file-label">Choisir un fichier OFX</label>
-            <input type="file" id="ofxFile" accept=".ofx,.qfx">
-            <p id="file-name">Aucun fichier sélectionné</p>
-            <button id="analyzeBtn" disabled>Analyser</button>
+<body class="antialiased text-gray-800">
+
+    <div class="min-h-screen container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold gradient-text">Revelio Finance ✨</h1>
+            <p class="mt-4 text-lg text-gray-600">Importez vos transactions OFX pour une analyse privée et intelligente.</p>
+        </header>
+
+        <div id="upload-card" class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 transition-all duration-300">
+            <div id="upload-area" class="border-2 border-dashed border-gray-300 rounded-lg p-10 text-center cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-colors">
+                <input type="file" id="ofxFile" accept=".ofx,.qfx" class="hidden">
+                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <p class="mt-2 text-sm text-gray-600">
+                    <span class="font-semibold text-blue-600">Cliquez pour choisir un fichier</span> ou glissez-déposez
+                </p>
+                <p class="text-xs text-gray-500">Fichiers OFX ou QFX uniquement</p>
+            </div>
+            <div id="file-info" class="mt-4 text-center hidden">
+                <p class="text-gray-700 font-medium" id="file-name"></p>
+                <button id="analyzeBtn" class="mt-4 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-105">
+                    Lancer l'Analyse
+                </button>
+            </div>
         </div>
-        <div class="loader" id="loader"></div>
-        <div id="error-message" class="error"></div>
-        <div class="results-section" id="results-section"></div>
+
+        <div id="progress-section" class="max-w-2xl mx-auto mt-8 hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <h3 class="text-lg font-semibold text-center">Analyse en cours...</h3>
+                <p id="progress-status" class="text-center text-gray-500 mt-2">Initialisation...</p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="results-section" class="mt-12 hidden">
+             <div class="flex justify-between items-center mb-4">
+                <h2 class="text-3xl font-bold text-gray-900">Transactions Analysées</h2>
+                <button id="resetBtn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Analyser un autre fichier</button>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Date</th>
+                                <th scope="col" class="px-6 py-3">Description</th>
+                                <th scope="col" class="px-6 py-3 text-right">Montant</th>
+                                <th scope="col" class="px-6 py-3">Marchand</th>
+                                <th scope="col" class="px-6 py-3">Catégorie</th>
+                                <th scope="col" class="px-6 py-3">Ville</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="error-section" class="max-w-2xl mx-auto mt-8 hidden">
+             <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+                <p class="font-bold">Une erreur est survenue</p>
+                <p id="error-message"></p>
+            </div>
+        </div>
+
     </div>
 
     <script>
+        // Éléments du DOM
+        const uploadCard = document.getElementById('upload-card');
+        const uploadArea = document.getElementById('upload-area');
         const ofxFileInput = document.getElementById('ofxFile');
-        const analyzeBtn = document.getElementById('analyzeBtn');
+        const fileInfo = document.getElementById('file-info');
         const fileNameDisplay = document.getElementById('file-name');
-        const loader = document.getElementById('loader');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const progressSection = document.getElementById('progress-section');
+        const progressBar = document.getElementById('progress-bar');
+        const progressStatus = document.getElementById('progress-status');
+
         const resultsSection = document.getElementById('results-section');
+        const resultsTbody = document.getElementById('results-tbody');
+        
+        const errorSection = document.getElementById('error-section');
         const errorMessage = document.getElementById('error-message');
 
         let selectedFile = null;
+        let transactionsToProcess = [];
 
-        ofxFileInput.addEventListener('change', (event) => {
-            selectedFile = event.target.files[0];
-            if (selectedFile) {
-                fileNameDisplay.textContent = selectedFile.name;
-                analyzeBtn.disabled = false;
-            } else {
-                fileNameDisplay.textContent = 'Aucun fichier sélectionné';
-                analyzeBtn.disabled = true;
-            }
+        // Gestion du Drag & Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
         });
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => uploadArea.classList.add('bg-gray-100', 'border-blue-500'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('bg-gray-100', 'border-blue-500'), false);
+        });
+        uploadArea.addEventListener('drop', handleDrop, false);
 
-        analyzeBtn.addEventListener('click', async () => {
-            if (!selectedFile) {
-                alert("Veuillez d'abord sélectionner un fichier.");
-                return;
+        // Clic pour sélectionner un fichier
+        uploadArea.addEventListener('click', () => ofxFileInput.click());
+        ofxFileInput.addEventListener('change', handleFileSelect);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            handleFiles(e.target.files);
+        }
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                selectedFile = files[0];
+                fileNameDisplay.textContent = selectedFile.name;
+                uploadArea.classList.add('hidden');
+                fileInfo.classList.remove('hidden');
             }
+        }
+        
+        // Clic sur le bouton d'analyse
+        analyzeBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
 
-            loader.style.display = 'block';
-            analyzeBtn.disabled = true;
-            resultsSection.innerHTML = '';
-            errorMessage.textContent = '';
+            // Masquer la carte d'upload et afficher la progression
+            uploadCard.classList.add('hidden');
+            progressSection.classList.remove('hidden');
+            errorSection.classList.add('hidden');
+            resultsTbody.innerHTML = ''; // Vider les anciens résultats
 
             const formData = new FormData();
             formData.append('file', selectedFile);
 
             try {
-                const response = await fetch('/upload-ofx/', {
+                // 1. Envoyer le fichier pour parsing initial
+                progressStatus.textContent = 'Lecture et parsing du fichier OFX...';
+                const response = await fetch('/parse-ofx/', {
                     method: 'POST',
                     body: formData
                 });
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.detail || `Erreur ${response.status}`);
+                    throw new Error(errorData.detail || `Erreur serveur ${response.status}`);
                 }
-
+                
                 const data = await response.json();
-                displayResults(data.transactions);
+                transactionsToProcess = data.transactions;
+                
+                // 2. Démarrer l'analyse via WebSocket
+                startWebSocketAnalysis();
 
             } catch (error) {
-                errorMessage.textContent = `Une erreur est survenue : ${error.message}`;
-            } finally {
-                loader.style.display = 'none';
-                analyzeBtn.disabled = false;
+                showError(error.message);
             }
         });
+        
+        function startWebSocketAnalysis() {
+            const ws = new WebSocket(`ws://${window.location.host}/ws/analyze`);
 
-        function displayResults(transactions) {
-            if (!transactions || transactions.length === 0) {
-                resultsSection.innerHTML = '<p>Aucune transaction trouvée dans le fichier.</p>';
-                return;
-            }
+            ws.onopen = () => {
+                console.log("WebSocket connecté. Envoi des transactions pour analyse.");
+                // Envoyer la liste des transactions au backend
+                ws.send(JSON.stringify(transactionsToProcess));
+            };
 
-            const table = document.createElement('table');
-            table.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Montant</th>
-                        <th>Marchand Probable</th>
-                        <th>Catégorie Suggérée</th>
-                        <th>Ville</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${transactions.map(t => `
-                        <tr>
-                            <td>${t.date}</td>
-                            <td>${t.description}</td>
-                            <td>${t.amount.toFixed(2)} €</td>
-                            <td>${t.marchand_probable || 'N/A'}</td>
-                            <td>${t.categorie_suggeree || 'N/A'}</td>
-                            <td>${t.ville || 'N/A'}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            `;
-            resultsSection.appendChild(table);
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                
+                if (message.type === 'progress') {
+                    // Mettre à jour la barre de progression
+                    progressBar.style.width = `${message.progress_percent}%`;
+                    progressStatus.textContent = `Analyse en cours... Transaction ${message.processed_count} / ${message.total_count}`;
+                    
+                    // Ajouter les résultats du lot au tableau
+                    appendResults(message.data);
+
+                } else if (message.type === 'complete') {
+                    console.log("Analyse terminée !");
+                    progressSection.classList.add('hidden');
+                    resultsSection.classList.remove('hidden');
+                    ws.close();
+
+                } else if (message.type === 'error') {
+                    throw new Error(message.message);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error("Erreur WebSocket:", error);
+                showError("La connexion avec le serveur d'analyse a été perdue.");
+            };
+
+            ws.onclose = () => {
+                console.log("WebSocket déconnecté.");
+            };
         }
+
+        function appendResults(transactions) {
+            if (!transactions) return;
+
+            const rowsHtml = transactions.map(t => {
+                const amountClass = t.amount < 0 ? 'text-red-500' : 'text-green-600';
+                return `
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${t.date}</td>
+                        <td class="px-6 py-4">${t.description}</td>
+                        <td class="px-6 py-4 text-right font-mono ${amountClass}">${t.amount.toFixed(2).replace('.',',')} €</td>
+                        <td class="px-6 py-4">${t.marchand_probable || 'N/A'}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                ${t.categorie_suggeree || 'N/A'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">${t.ville || 'N/A'}</td>
+                    </tr>
+                `;
+            }).join('');
+            resultsTbody.innerHTML += rowsHtml;
+        }
+        
+        function showError(message) {
+            progressSection.classList.add('hidden');
+            errorMessage.textContent = message;
+            errorSection.classList.remove('hidden');
+        }
+        
+        // Clic sur le bouton de réinitialisation
+        resetBtn.addEventListener('click', () => {
+            selectedFile = null;
+            transactionsToProcess = [];
+            
+            // Réinitialiser les affichages
+            resultsSection.classList.add('hidden');
+            errorSection.classList.add('hidden');
+            uploadCard.classList.remove('hidden');
+            uploadArea.classList.remove('hidden');
+            fileInfo.classList.add('hidden');
+            ofxFileInput.value = ''; // Important pour pouvoir re-sélectionner le même fichier
+        });
+
     </script>
+
 </body>
 </html>
