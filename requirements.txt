@@ -2,3 +2,7 @@ fastapi
 uvicorn[standard]
 ofxtools
 python-multipart
+httpx
+pytest
+pytest-asyncio
+respx
