@@ -1,10 +1,13 @@
 # prototype_app.py
 import streamlit as st
 import pandas as pd
-# Assurez-vous que le fichier ofx_parser.py est dans le même répertoire
-# ou dans un répertoire accessible par Python.
-# Pour ce prototype, le plus simple est de le mettre dans le dossier 'prototype/'.
-from ofx_parser import parse_ofx 
+# Rendre le module backend accessible lorsque l'app est lancée depuis ce sous-dossier
+import os
+import sys
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+from backend.ofx_parser import parse_ofx
 
 st.set_page_config(layout="wide")
 st.title("📊 Revelio Finance - Prototype de Visionneuse OFX")
@@ -29,8 +32,10 @@ uploaded_file = st.file_uploader("Choisissez un fichier OFX", type=["ofx", "qfx"
 if uploaded_file is not None:
     st.success("Fichier téléversé avec succès!")
     
-    # Utiliser le parser pour extraire les transactions
-    transactions = parse_ofx(uploaded_file)
+    # Lire le contenu et utiliser le parser pour extraire les transactions
+    file_bytes = uploaded_file.read()
+    uploaded_file.seek(0)
+    transactions = parse_ofx(file_bytes)
     
     if transactions:
         # Convertir en DataFrame Pandas pour un affichage facile
@@ -50,8 +55,19 @@ if uploaded_file is not None:
         # Créer une copie pour l'édition
         df_editable = df.copy()
         
-        # Liste des catégories possibles (LA LIGNE CORRIGÉE)
-        categories_list =
+        # Liste des catégories possibles
+        categories_list = [
+            "Non Catégorisé",
+            "Abonnements",
+            "Shopping en ligne",
+            "Factures (Télécom)",
+            "Courses",
+            "Transport",
+            "Loisirs",
+            "Restauration",
+            "Santé",
+            "Autres"
+        ]
         
         # Créer une colonne pour la catégorie manuelle
         df_editable['categorie_manuelle'] = ""
