@@ -6,7 +6,7 @@ import logging
 from .schemas import CategorizationResponse
 
 OLLAMA_API_URL = "http://host.docker.internal:11434/api/generate"
-LLM_MODEL = "llama3:8b"
+LLM_MODEL = "llama3.2:3b"
 
 logger = logging.getLogger(__name__)
 
