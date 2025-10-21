@@ -1,3 +1,5 @@
+![Status: POC](https://img.shields.io/badge/status-POC-lightgrey)
+
 # Revelio Finance ✨
 
 **Revelio Finance** est une application web de finances personnelles conçue pour apporter de la clarté à vos dépenses grâce à une analyse locale, privée et intelligente.
